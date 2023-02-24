@@ -5,10 +5,6 @@
 #include <stdlib.h>
 #include "../utils.h"
 
-int alignBy4(int n) {
-    return (n + 3) & ~3;
-}
-
 
 MessagePadder::MessagePadder()
 {
@@ -82,22 +78,20 @@ void MessagePadder::expand(int expand)
     }
 }
 
-
 char *MessagePadder::dumpToPositionRaw()
 {
-    return getAsHex(this->payload, this->position, false);
+    return getAsHex(this->payload, this->position);
 }
 
 char *MessagePadder::dumpToPosition()
 {
-    return getAsHex(this->payload, this->position, true);
+    return getAsHex(this->payload, this->position);
 }
 
 char *MessagePadder::dump()
 {
-    return getAsHex(this->payload, this->size, true);
+    return getAsHex(this->payload, this->size);
 }
-
 
 int MessagePadder::length() {
     return this->position;

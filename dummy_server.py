@@ -1,5 +1,7 @@
 import socket
-
+"""
+Used for debugging only.
+"""
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(("localhost", 3232))
     s.listen()

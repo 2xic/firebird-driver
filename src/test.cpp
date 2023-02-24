@@ -2,3 +2,5 @@
 #include "crypto/srp_test.cpp"
 #include "database/Connection_test.cpp"
 #include "serialization/MessagePadder_test.cpp"
+#include "serialization/MessageDecoder_test.cpp"
+#include "crypto/sha1_test.cpp"

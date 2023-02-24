@@ -7,6 +7,7 @@
 #include "config.h"
 #include "Connection.h"
 #include "Firebird.h"
+#include "../serialization/MessageDecoder.h"
 
 Firebird::Firebird()
 {
@@ -57,7 +58,7 @@ int Firebird::Connect()
     }
 
     int bytesSent = write(
-        this->client_fd, 
+        this->client_fd,
         newString.c_str(),
         this->connection->messagePadder->position
     );
@@ -67,14 +68,14 @@ int Firebird::Connect()
     printf("status == %i\n ", this->status);
     printf("data == %s\n", this->connection->messagePadder->dumpToPosition());
 
+    MessageDecoder *decode = new MessageDecoder();
     while(1) {
-        char buffer[1024] = { 0 };
-        int valread = recv(this->client_fd, buffer, 1024, 0);
-        printf("Output = %i\n", valread);
-        printf("%x\n", buffer);
-        for(int i = 0; i < 1024; i++){
-            printf("%x", buffer[i]);
-        }
+        unsigned char buffer[1024] = { 0 };
+        int length = recv(this->client_fd, buffer, 1024, 0);
+        printf("Output = %i\n", length);
+        decode->decode((unsigned char*)&buffer, length);
+        decode->opcode();
+
         printf("\n");
         exit(0);
 //        printf("Output = %s\n", buffer);

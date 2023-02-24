@@ -9,7 +9,7 @@ int size;
 
 public:
     int position;
-int *payload;
+    int *payload;
 
     MessagePadder();
 

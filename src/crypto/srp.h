@@ -14,6 +14,15 @@ public:
     Srp();
 
     char *HexPublicKey();
+
+    BIGNUM* ClientSession(
+        char* user,
+        char* password,
+        char* salt,
+        char *client_publickey,
+        char *server_publickey,
+        char *client_privatekey
+    );
 };
 
 #endif

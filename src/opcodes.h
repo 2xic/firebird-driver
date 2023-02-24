@@ -2,7 +2,7 @@
 #define opcodes_H
 
 // From https://github.com/hgourvest/node-firebird/blob/765bc1aead64e6df37c8baa330413f4210c6cd91/lib/index.js#L283
-inline int
+inline const int
     CNCT_user = 1,   // User name
     CNCT_passwd = 2, // CNCT_ppo = 3, // Apollo person, project, organization. OBSOLETE.
     CNCT_host = 4,
@@ -17,7 +17,7 @@ inline int
     WIRE_CRYPT_ENABLED = 1,
     WIRE_CRYPT_REQUIRED = 2;
 
-inline int
+inline const int
     op_void = 0,       // Packet has been voided
     op_connect = 1,    // Connect to remote server
     op_exit = 2,       // Remote end has exitted
@@ -114,12 +114,12 @@ inline int
     op_cond_accept = 98; // Server accepts connection, returns some data to client
                          // and asks client to continue authentication before attach call
 
-inline int
+inline const int
     CONNECT_VERSION2 = 2,
     CONNECT_VERSION3 = 3,
     ARCHITECTURE_GENERIC = 1;
 
-inline int
+inline const int
     // Protocol 10 includes support for warnings and removes the requirement for
     // encoding and decoding status codes
     PROTOCOL_VERSION10 = 10,
@@ -148,7 +148,7 @@ inline int
     PROTOCOL_VERSION13 = (FB_PROTOCOL_FLAG | 13);
 
 // Protocols types (accept_type)
-inline int
+inline const int
     ptype_rpc = 2,          // Simple remote procedure call
     ptype_batch_send = 3,   // Batch sends, no asynchrony
     ptype_out_of_band = 4,  // Batch sends w/ out of band notification
@@ -156,7 +156,7 @@ inline int
     ptype_mask = 0xFF,      // Mask - up to 255 types of protocol
     pflag_compress = 0x100; // Turn on compression if possible
 
-inline int suppoerted_protocols[4][5] = {
+inline const int suppoerted_protocols[4][5] = {
     {PROTOCOL_VERSION10, ARCHITECTURE_GENERIC, ptype_rpc, ptype_batch_send, 1},
     {PROTOCOL_VERSION11, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 2},
 	{PROTOCOL_VERSION12, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 3},
