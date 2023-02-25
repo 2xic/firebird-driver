@@ -1,6 +1,6 @@
 #include <cheat.h>
-#include "sha1.h"
-#include "../utils.h"
+#include "Sha1.h"
+#include "../utils/Utils.h"
 
 CHEAT_TEST(sha1_encoding,
     Sha1 *message = new Sha1();

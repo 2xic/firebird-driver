@@ -1,40 +1,37 @@
-#include "../MessagePadder.h"
-#include "../config.h"
+#include "./MessagePaddr.h"
+#include "../utils/Config.h"
+#include "../utils/Utils.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../utils.h"
 
 
-MessagePadder::MessagePadder()
+MessagePaddr::MessagePaddr()
 {
     this->position = 0;
     this->size = 32;
-    this->payload = (int *)malloc(sizeof(int) * this->size);
+    this->payload = (unsigned char *)malloc(sizeof(unsigned char) * this->size);
 }
 
-void MessagePadder::write4Bytes(int value) {
+void MessagePaddr::write4Bytes(int value) {
     this->expand(4);
-
-    //printf("%i %X\n", value, value);
 
     int index = 3;
     while(value > 0) {
         this->payload[this->position + index] = (int)(value & 0xFF);
-     //   printf("%x\n", this->payload[this->position + index]);
         value = (int)(value >> 8);
         index--;
     }
     this->position+=4;
 }
 
-void MessagePadder::writeString(char* value) {
+void MessagePaddr::writeString(char* value) {
     int aligned = alignBy4(strlen(value));
     this->expand(aligned + 4);
 
     this->write4Bytes(strlen(value));
 
-    // TODO: Using stnrcpy is probably faster
+    // TODO: Using memcpy is probably faster
     for (int i = 0; i < strlen(value); i++){
         this->payload[this->position++] = value[i];
     }
@@ -42,13 +39,13 @@ void MessagePadder::writeString(char* value) {
 }
 
 
-void MessagePadder::writeMessage(Message *message)
+void MessagePaddr::writeMessage(Message *message)
 {
     int aligned = alignBy4(message->length());
     this->expand(aligned + 4);
     this->write4Bytes(message->length());
-//    printf("pos == %i\n", message->length());
-    // TODO: Using stnrcpy is probably faster
+
+    // TODO: Using memcpy is probably faster
     for (int i = 0; i < message->length(); i++){
         this->payload[this->position++] = message->payload[i];
     }
@@ -56,7 +53,7 @@ void MessagePadder::writeMessage(Message *message)
 }
 
 
-void MessagePadder::expand(int expand)
+void MessagePaddr::expand(int expand)
 {
     bool expanded = false;
     int old_size = this->size;
@@ -68,31 +65,21 @@ void MessagePadder::expand(int expand)
 
     if (expanded)
     {
-        //printf("Expandded\n");
-        this->payload = (int *)realloc(this->payload, sizeof(int) *  this->size);
+        this->payload = (unsigned char *)realloc(this->payload, sizeof(unsigned char) *  this->size);
         memset((this->payload + old_size), 0, this->size - old_size);
-        /*
-        for(int i = old_size; i < this->size;i++){
-            *(this->payload + i) = 0;
-        }*/
     }
 }
 
-char *MessagePadder::dumpToPositionRaw()
+char *MessagePaddr::dumpToPosition()
 {
     return getAsHex(this->payload, this->position);
 }
 
-char *MessagePadder::dumpToPosition()
-{
-    return getAsHex(this->payload, this->position);
-}
-
-char *MessagePadder::dump()
+char *MessagePaddr::dump()
 {
     return getAsHex(this->payload, this->size);
 }
 
-int MessagePadder::length() {
+int MessagePaddr::length() {
     return this->position;
 }

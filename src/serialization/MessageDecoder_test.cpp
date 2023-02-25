@@ -1,8 +1,8 @@
 #include <cheat.h>
-#include "../MessagePadder.h"
+#include "./MessagePaddr.h"
 #include "./MessageDecoder.h"
-#include "../message.h"
-#include "../opcodes.h"
+#include "./Message.h"
+#include "../utils/Opcodes.h"
 
 // TODO: Endinaess is diffrent it seems
 /*

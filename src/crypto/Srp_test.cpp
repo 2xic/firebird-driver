@@ -1,7 +1,7 @@
 #include <cheat.h>
-#include "srp.h"
-#include "../config.h"
-#include "../utils.h"
+#include "./Srp.h"
+#include "../utils/Config.h"
+#include "../utils/Utils.h"
 
 CHEAT_TEST(srp_encoding,
     Srp *message = new Srp();

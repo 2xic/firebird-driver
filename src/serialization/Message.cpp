@@ -1,6 +1,6 @@
 // https://github.com/hgourvest/node-firebird/blob/765bc1aead64e6df37c8baa330413f4210c6cd91/lib/index.js#L3559
-#include "message.h"
-#include "config.h"
+#include "./Message.h"
+#include "../utils/Config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -26,7 +26,6 @@ void Message::writeString(char *value)
         this->payload[this->position++] = (int)value[i];
     }
 }
-
 
 void Message::writeRaw(char *value)
 {

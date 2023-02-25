@@ -1,17 +1,17 @@
-#ifndef MessagePadder_H
-#define MessagePadder_H
+#ifndef MessagePaddr_H
+#define MessagePaddr_H
 
-#include "./message.h"
+#include "./Message.h"
 
-class MessagePadder
+class MessagePaddr
 {
 int size;
 
 public:
     int position;
-    int *payload;
+    unsigned char *payload;
 
-    MessagePadder();
+    MessagePaddr();
 
     void write4Bytes(int value);
 
@@ -24,8 +24,6 @@ public:
     char *dump();
 
     char *dumpToPosition();
-
-    char* dumpToPositionRaw();
 
     int length();
 };

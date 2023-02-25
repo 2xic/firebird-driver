@@ -1,9 +1,8 @@
-
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
-#include "srp.h"
-#include "../config.h"
-#include "sha1.h"
+#include "Srp.h"
+#include "../utils/Config.h"
+#include "Sha1.h"
 #include <cstring>
 
 // https://github.com/nakagami/firebirdsql/blob/master/srp.go
@@ -57,6 +56,9 @@ char *Srp::HexPublicKey()
     return BN_bn2hex(this->publickey);
 }
 
+/*
+    TODO: This is messy, and does not properly free the memory 
+*/
 BIGNUM* Srp::ClientSession(
     char *username,
     char *password,

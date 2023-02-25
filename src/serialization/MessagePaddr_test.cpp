@@ -1,26 +1,18 @@
 #include <cheat.h>
-#include "../MessagePadder.h"
-#include "../message.h"
-#include "../opcodes.h"
+#include "./MessagePaddr.h"
+#include "./Message.h"
+#include "../utils/Opcodes.h"
 
 CHEAT_TEST(
-    message_padder_string,
+    message_paddr_string,
     const char *string = "test\0";
 
-    MessagePadder *message = new MessagePadder();
+    MessagePaddr *message = new MessagePaddr();
     message->write4Bytes(op_connect);
     message->write4Bytes(op_attach);
     message->write4Bytes(CONNECT_VERSION3);
     message->write4Bytes(ARCHITECTURE_GENERIC);
     message->writeString((char *)string);
-    /*
-    [
-        [PROTOCOL_VERSION10, ARCHITECTURE_GENERIC, ptype_rpc, ptype_batch_send, 1],
-        [PROTOCOL_VERSION11, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 2],
-        [PROTOCOL_VERSION12, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 3],
-        [PROTOCOL_VERSION13, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 4],
-    ]
-    */
     message->write4Bytes(4);
 
     cheat_assert(
@@ -42,18 +34,24 @@ CHEAT_TEST(
             "00000001000000130000000300000001000000047465737400000004000000060004746573740000000000000000000000000000000000000000000000000000",
             128) == 0);
     cheat_assert(
-        message->length() == 40
-    );
+        message->length() == 40);
 
+    /*
+    [
+        [PROTOCOL_VERSION10, ARCHITECTURE_GENERIC, ptype_rpc, ptype_batch_send, 1],
+        [PROTOCOL_VERSION11, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 2],
+        [PROTOCOL_VERSION12, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 3],
+        [PROTOCOL_VERSION13, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 4],
+    ]
+    */
     for (int i = 0; i < 4; i++) {
-        message->write4Bytes(suppoerted_protocols[i][0]);
-        message->write4Bytes(suppoerted_protocols[i][1]);
-        message->write4Bytes(suppoerted_protocols[i][2]);
-        message->write4Bytes(suppoerted_protocols[i][3]);
-        message->write4Bytes(suppoerted_protocols[i][4]);
+        message->write4Bytes(supported_protocols[i][0]);
+        message->write4Bytes(supported_protocols[i][1]);
+        message->write4Bytes(supported_protocols[i][2]);
+        message->write4Bytes(supported_protocols[i][3]);
+        message->write4Bytes(supported_protocols[i][4]);
     }
 
-  //  printf("%s\n", message->dump());
     cheat_assert(
         strncmp(
             message->dump(),

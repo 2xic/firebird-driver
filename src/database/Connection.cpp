@@ -1,12 +1,12 @@
 #include "Connection.h"
-#include "../message.h"
-#include "../MessagePadder.h"
-#include "../crypto/srp.h"
+#include "../serialization/Message.h"
+#include "../serialization/MessagePaddr.h"
+#include "../crypto/Srp.h"
 #include <string>
 
 DatabaseConnection::DatabaseConnection()
 {
-    this->messagePadder = new MessagePadder();
+    this->messagePaddr = new MessagePaddr();
     this->message = new Message();
     this->srp = new Srp();
 
@@ -46,23 +46,23 @@ DatabaseConnection::DatabaseConnection()
     //
     write_int_opcode(this->message, CNCT_user_verification, 0);
 
-    // Message padder
-    this->messagePadder->write4Bytes(op_connect);
-    this->messagePadder->write4Bytes(op_attach);
-    this->messagePadder->write4Bytes(CONNECT_VERSION3);
-    this->messagePadder->write4Bytes(ARCHITECTURE_GENERIC);
+    // Message paddr
+    this->messagePaddr->write4Bytes(op_connect);
+    this->messagePaddr->write4Bytes(op_attach);
+    this->messagePaddr->write4Bytes(CONNECT_VERSION3);
+    this->messagePaddr->write4Bytes(ARCHITECTURE_GENERIC);
 
     const char *database = "test\0";
 
-    this->messagePadder->writeString((char*)database);
-    this->messagePadder->write4Bytes(4);
-    this->messagePadder->writeMessage(message);
+    this->messagePaddr->writeString((char*)database);
+    this->messagePaddr->write4Bytes(4);
+    this->messagePaddr->writeMessage(message);
     
     for (int i = 0; i < 4; i++) {
-        this->messagePadder->write4Bytes(suppoerted_protocols[i][0]);
-        this->messagePadder->write4Bytes(suppoerted_protocols[i][1]);
-        this->messagePadder->write4Bytes(suppoerted_protocols[i][2]);
-        this->messagePadder->write4Bytes(suppoerted_protocols[i][3]);
-        this->messagePadder->write4Bytes(suppoerted_protocols[i][4]);
+        this->messagePaddr->write4Bytes(supported_protocols[i][0]);
+        this->messagePaddr->write4Bytes(supported_protocols[i][1]);
+        this->messagePaddr->write4Bytes(supported_protocols[i][2]);
+        this->messagePaddr->write4Bytes(supported_protocols[i][3]);
+        this->messagePaddr->write4Bytes(supported_protocols[i][4]);
     }
 }

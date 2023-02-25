@@ -3,29 +3,29 @@
 
 #include <stdio.h>
 #include <ctype.h>
-//#include <string>
+#include <cstdlib>
 
 inline int alignBy4(int n) {
     return (n + 3) & ~3;
 }
 
 inline char *toLowerCase(char *string) {
-    char *tptr = (char *)string;
-    while(*tptr) {
-        *tptr = tolower(*tptr);
-        tptr++;
+    char *ref_ptr = (char *)string;
+    while(*ref_ptr) {
+        *ref_ptr = tolower(*ref_ptr);
+        ref_ptr++;
     }
     return string;
 }
 
-inline char* getAsHex(int *data, int length) {
+inline char* getAsHex(unsigned char *data, int length) {
     char *results = (char*)malloc(sizeof(char) * (length * 2 + 1));
     for (int i = 0; i < length; i++)
     {
         sprintf(results + i * 2, "%02x", data[i]);
     }
     results[length * 2] = '\0';
-    // Dump should not be returned here, or should be set on the object so it can be properly freed
+    // TODO: Dump should not be returned here, or should be set on the object so it can be properly freed
     return results;
 }
 

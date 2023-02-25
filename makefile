@@ -2,13 +2,14 @@
 
 build:
 	g++ \
-		src/main.cpp src/message.cpp \
+		./src/main.cpp \
+		./src/serialization/Message.cpp \
 		./src/serialization/MessageDecoder.cpp \
-		./src/serialization/MessagePadder.cpp \
-		./src/crypto/srp.cpp \
+		./src/serialization/MessagePaddr.cpp \
+		./src/crypto/Srp.cpp \
 		./src/database/Connection.cpp \
 		./src/database/Firebird.cpp \
-		./src/crypto/sha1.cpp \
+		./src/crypto/Sha1.cpp \
 		./src/serialization/opcodes/Acceptdata.cpp \
 	-I ./src/ \
 	-lcrypto \
@@ -17,11 +18,11 @@ build:
 test:
 	cd src && g++ \
 		test.cpp \
-		message.cpp \
-		./serialization/MessagePadder.cpp \
+		./serialization/Message.cpp \
+		./serialization/MessagePaddr.cpp \
 		./serialization/MessageDecoder.cpp \
-		./crypto/srp.cpp \
-		./crypto/sha1.cpp \
+		./crypto/Srp.cpp \
+		./crypto/Sha1.cpp \
 		./database/Connection.cpp \
 		./serialization/opcodes/Acceptdata.cpp \
 		-o ../firebird_cli_test -I ./ -lm -lcrypto

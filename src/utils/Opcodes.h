@@ -2,6 +2,7 @@
 #define opcodes_H
 
 // From https://github.com/hgourvest/node-firebird/blob/765bc1aead64e6df37c8baa330413f4210c6cd91/lib/index.js#L283
+
 inline const int
     CNCT_user = 1,   // User name
     CNCT_passwd = 2, // CNCT_ppo = 3, // Apollo person, project, organization. OBSOLETE.
@@ -156,7 +157,7 @@ inline const int
     ptype_mask = 0xFF,      // Mask - up to 255 types of protocol
     pflag_compress = 0x100; // Turn on compression if possible
 
-inline const int suppoerted_protocols[4][5] = {
+inline const int supported_protocols[4][5] = {
     {PROTOCOL_VERSION10, ARCHITECTURE_GENERIC, ptype_rpc, ptype_batch_send, 1},
     {PROTOCOL_VERSION11, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 2},
 	{PROTOCOL_VERSION12, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 3},

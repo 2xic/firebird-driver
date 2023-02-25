@@ -1,14 +1,14 @@
 #ifndef Connection_H
 #define Connection_H
-#include "../message.h"
-#include "../MessagePadder.h"
-#include "../crypto/srp.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdlib.h>
-#include "../opcodes.h"
-#include "../config.h"
-#include "../utils.h"
+#include "../serialization/Message.h"
+#include "../serialization/MessagePaddr.h"
+#include "../crypto/Srp.h"
+#include "../utils/Opcodes.h"
+#include "../utils/Config.h"
+#include "../utils/Utils.h"
 
 class DatabaseConnection
 {
@@ -16,7 +16,7 @@ Srp *srp;
 
 public:
     Message *message;
-    MessagePadder* messagePadder;
+    MessagePaddr* messagePaddr;
 
     DatabaseConnection();
 };
@@ -59,7 +59,7 @@ inline void write_multi_block(Message *message, char*string) {
         int length = min(254, left);
 
         message->writeInt8(CNCT_specific_data);
-        message->writeInt8(length + 1);// + 1);
+        message->writeInt8(length + 1);
         message->writeInt8(step);
 
         message->expand(length);

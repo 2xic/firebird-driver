@@ -1,5 +1,5 @@
 #include <cheat.h>
-#include "message.h"
+#include "./Message.h"
 
 CHEAT_TEST(uint_message_encoding,
     Message *message = new Message();
