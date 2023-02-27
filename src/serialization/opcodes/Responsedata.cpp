@@ -22,6 +22,10 @@ ResponseData::ResponseData(MessageDecoder *decoder){
             }
             case isc_arg_gds: {
                 int number = decoder->readInt();
+                if (number == 0){
+                    done = true;
+                    break;
+                }
                 printf("gscode == %i == num\n", number);
                 log("pos == %i\n", decoder->position);
                 this->is_error = true;

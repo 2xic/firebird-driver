@@ -29,6 +29,15 @@ public:
         char *server_publickey,
         char *client_privatekey
     );
+
+    BIGNUM* ClientProof(
+        char *username,
+        char *password,
+        char *salt,
+        char *client_publickey,
+        char *server_publickey,
+        char *client_privatekey
+    );
 };
 
 #endif

@@ -50,30 +50,19 @@ void AcceptData::decode(MessageDecoder *decoder)
         unsigned char *salt = keys->readBuffer(saltLength);
         short keyLength = keys->readShortLe();
         unsigned char* keys_data = keys->readBuffer(keyLength);
-        printf("%i %i\n", saltLength, keyLength);
-
-  //      printf("salt == %s \n", getAsHex(salt, saltLength));
-        printf("salt == %s \n", salt);
-        printf("server_keys == %s \n", keys_data);
-        printf("pub == %s\n", srp->DecPublicKey());
-        printf("priv == %s\n", srp->DecPrivateKey());
 
         BIGNUM *bn1 = BN_new();
         BN_hex2bn(&bn1, (char*)keys_data);
 
-        printf("keee === %s\n", BN_bn2dec(bn1));
-
-//        HexStringToAscii((char*)keys_data, 256);
-
-        this->client_session = srp->ClientSession(
+        this->client_session = srp->ClientProof(
             (char*)FIREBIRD_USER,
             (char*)FIREBIRD_PASSWORD,
-            (char*)salt, //getAsHex(salt, saltLength),
+            (char*)salt, 
             srp->DecPublicKey(),
             BN_bn2dec(bn1),
-//            srp->HexPrivateKey(),
             srp->DecPrivateKey()
         );
+        BN_free(bn1);
     }
     else
     {
