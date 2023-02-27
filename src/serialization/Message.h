@@ -3,17 +3,23 @@
 
 class Message
 {
-int position;
 int size;
 
 public:
-    int *payload;
+    unsigned char *payload;
+    int position;
 
     Message();
 
+    // TODO: This name does not make sense
     void writeInt8(int value);
 
+    // TODO: This name does not make sense
+    void writeInt32(int value);
+
     void writeString(char* value);
+
+    void writeByte(unsigned char value);
 
     int read(int position);
 
@@ -22,6 +28,8 @@ public:
     void expand(int expand);
 
     char* dump();
+
+    char *dumpToPosition();
 
     void writeRaw(char*value);
 };

@@ -1,7 +1,7 @@
 .PHONY: build
 
 build:
-	g++ \
+	g++ -Wno-deprecated-declarations \
 		./src/main.cpp \
 		./src/serialization/Message.cpp \
 		./src/serialization/MessageDecoder.cpp \
@@ -11,12 +11,13 @@ build:
 		./src/database/Firebird.cpp \
 		./src/crypto/Sha1.cpp \
 		./src/serialization/opcodes/Acceptdata.cpp \
+		./src/serialization/opcodes/Responsedata.cpp \
 	-I ./src/ \
 	-lcrypto \
 	-o firebird_cli
 
 test:
-	cd src && g++ \
+	cd src && g++ -Wno-deprecated-declarations \
 		test.cpp \
 		./serialization/Message.cpp \
 		./serialization/MessagePaddr.cpp \
@@ -25,8 +26,12 @@ test:
 		./crypto/Sha1.cpp \
 		./database/Connection.cpp \
 		./serialization/opcodes/Acceptdata.cpp \
-		-o ../firebird_cli_test -I ./ -lm -lcrypto
+		./serialization/opcodes/Responsedata.cpp \
+		-o ../firebird_cli_test -I ./ -lm -lcrypto 
 	./firebird_cli_test --noisy
+
+run: build	
+	./firebird_cli
 
 fuzz:
 	echo "fuzz"

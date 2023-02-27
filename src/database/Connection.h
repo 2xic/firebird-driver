@@ -17,8 +17,19 @@ Srp *srp;
 public:
     Message *message;
     MessagePaddr* messagePaddr;
+    // TODO: Should be behind a getter
+    char* username;
+    char* password;
+    char* database;
 
-    DatabaseConnection();
+    DatabaseConnection(
+        char* username,
+        char* password,
+        char* database
+    );
+
+    int Connect();
+    int Attach(char *authdata);
 };
 
 inline void write_opcode(Message *message, int opcode, char*string) {

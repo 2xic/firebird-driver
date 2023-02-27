@@ -1,5 +1,6 @@
 #ifndef MessageDecoder_H
 #define MessageDecoder_H
+#include "./opcodes/Response.h"
 
 class MessageDecoder
 {
@@ -22,7 +23,9 @@ public:
 
     unsigned char* readBuffer(int length);
 
-    void opcode();
+    void readQuad();
+
+    Response * opcode();
 };
 
 #endif

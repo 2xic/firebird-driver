@@ -15,6 +15,12 @@ public:
 
     char *HexPublicKey();
 
+    char *HexPrivateKey();
+
+    char *DecPublicKey();
+
+    char *DecPrivateKey();
+
     BIGNUM* ClientSession(
         char* user,
         char* password,

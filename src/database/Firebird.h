@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include "Connection.h"
+#include "../serialization/opcodes/Response.h"
 #include <arpa/inet.h>
 
 class Firebird
@@ -16,5 +17,7 @@ public:
     Firebird();
     
     int Connect();
+
+    Response * ReadResponse(); 
 };
 #endif

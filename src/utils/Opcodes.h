@@ -157,6 +157,110 @@ inline const int
     ptype_mask = 0xFF,      // Mask - up to 255 types of protocol
     pflag_compress = 0x100; // Turn on compression if possible
 
+/**********************************/
+/* Database parameter block stuff */
+/**********************************/
+inline const int
+    isc_dpb_version1                = 1,
+    isc_dpb_version2                = 2, // >= FB30
+    isc_dpb_cdd_pathname            = 1,
+    isc_dpb_allocation              = 2,
+    isc_dpb_journal                 = 3,
+    isc_dpb_page_size               = 4,
+    isc_dpb_num_buffers             = 5,
+    isc_dpb_buffer_length           = 6,
+    isc_dpb_debug                   = 7,
+    isc_dpb_garbage_collect         = 8,
+    isc_dpb_verify                  = 9,
+    isc_dpb_sweep                   = 10,
+    isc_dpb_enable_journal          = 11,
+    isc_dpb_disable_journal         = 12,
+    isc_dpb_dbkey_scope             = 13,
+    isc_dpb_number_of_users         = 14,
+    isc_dpb_trace                   = 15,
+    isc_dpb_no_garbage_collect      = 16,
+    isc_dpb_damaged                 = 17,
+    isc_dpb_license                 = 18,
+    isc_dpb_sys_user_name           = 19,
+    isc_dpb_encrypt_key             = 20,
+    isc_dpb_activate_shadow         = 21,
+    isc_dpb_sweep_interval          = 22,
+    isc_dpb_delete_shadow           = 23,
+    isc_dpb_force_write             = 24,
+    isc_dpb_begin_log               = 25,
+    isc_dpb_quit_log                = 26,
+    isc_dpb_no_reserve              = 27,
+    isc_dpb_user_name               = 28,
+    isc_dpb_password                = 29,
+    isc_dpb_password_enc            = 30,
+    isc_dpb_sys_user_name_enc       = 31,
+    isc_dpb_interp                  = 32,
+    isc_dpb_online_dump             = 33,
+    isc_dpb_old_file_size           = 34,
+    isc_dpb_old_num_files           = 35,
+    isc_dpb_old_file                = 36,
+    isc_dpb_old_start_page          = 37,
+    isc_dpb_old_start_seqno         = 38,
+    isc_dpb_old_start_file          = 39,
+    isc_dpb_old_dump_id             = 41,
+    isc_dpb_lc_messages             = 47,
+    isc_dpb_lc_ctype                = 48,
+    isc_dpb_cache_manager           = 49,
+    isc_dpb_shutdown                = 50,
+    isc_dpb_online                  = 51,
+    isc_dpb_shutdown_delay          = 52,
+    isc_dpb_reserved                = 53,
+    isc_dpb_overwrite               = 54,
+    isc_dpb_sec_attach              = 55,
+    isc_dpb_connect_timeout         = 57,
+    isc_dpb_dummy_packet_interval   = 58,
+    isc_dpb_gbak_attach             = 59,
+    isc_dpb_sql_role_name           = 60,
+    isc_dpb_set_page_buffers        = 61,
+    isc_dpb_working_directory       = 62,
+    isc_dpb_sql_dialect             = 63,
+    isc_dpb_set_db_readonly         = 64,
+    isc_dpb_set_db_sql_dialect      = 65,
+    isc_dpb_gfix_attach             = 66,
+    isc_dpb_gstat_attach            = 67,
+    isc_dpb_set_db_charset          = 68,
+    isc_dpb_gsec_attach             = 69,
+    isc_dpb_address_path            = 70,
+    isc_dpb_process_id              = 71,
+    isc_dpb_no_db_triggers          = 72,
+    isc_dpb_trusted_auth            = 73,
+    isc_dpb_process_name            = 74,
+    isc_dpb_trusted_role            = 75,
+    isc_dpb_org_filename            = 76,
+    isc_dpb_utf8_filename           = 77,
+    isc_dpb_ext_call_depth          = 78,
+	isc_dpb_auth_block 				= 79,
+	isc_dpb_client_version 			= 80,
+	isc_dpb_remote_protocol 		= 81,
+	isc_dpb_host_name 				= 82,
+	isc_dpb_os_user 				= 83,
+	isc_dpb_specific_auth_data 		= 84,
+	isc_dpb_auth_plugin_list 		= 85,
+	isc_dpb_auth_plugin_name 		= 86,
+	isc_dpb_config 					= 87,
+	isc_dpb_nolinger 				= 88,
+	isc_dpb_reset_icu 				= 89,
+	isc_dpb_map_attach 				= 90,
+	isc_dpb_session_time_zone 		= 91;
+
+inline const int
+    isc_arg_end                     = 0,  // end of argument list
+    isc_arg_gds                     = 1,  // generic DSRI status value
+    isc_arg_string                  = 2,  // string argument
+    isc_arg_cstring                 = 3,  // count & string argument
+    isc_arg_number                  = 4,  // numeric argument (long)
+    isc_arg_interpreted             = 5,  // interpreted status code (string)
+    isc_arg_unix                    = 7,  // UNIX error code
+    isc_arg_next_mach               = 15, // NeXT/Mach error code
+    isc_arg_win32                   = 17, // Win32 error code
+    isc_arg_warning                 = 18, // warning argument
+    isc_arg_sql_state               = 19; // SQLSTATE
+
 inline const int supported_protocols[4][5] = {
     {PROTOCOL_VERSION10, ARCHITECTURE_GENERIC, ptype_rpc, ptype_batch_send, 1},
     {PROTOCOL_VERSION11, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 2},

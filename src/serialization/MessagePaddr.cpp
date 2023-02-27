@@ -22,20 +22,28 @@ void MessagePaddr::write4Bytes(int value) {
         value = (int)(value >> 8);
         index--;
     }
+    while(index >= 0) {
+        this->payload[this->position + index] = 0;
+        index--;        
+    }
     this->position+=4;
 }
 
 void MessagePaddr::writeString(char* value) {
-    int aligned = alignBy4(strlen(value));
+    int length = strlen(value);
+    int aligned = alignBy4(length);
     this->expand(aligned + 4);
 
-    this->write4Bytes(strlen(value));
+    this->write4Bytes(length);
 
     // TODO: Using memcpy is probably faster
-    for (int i = 0; i < strlen(value); i++){
+    for (int i = 0; i < length; i++){
         this->payload[this->position++] = value[i];
     }
-    this->position += (aligned - strlen(value));
+
+    for (int i = 0; i < (aligned - length); i++){
+        this->payload[this->position++] = 0;
+    }
 }
 
 
@@ -50,6 +58,9 @@ void MessagePaddr::writeMessage(Message *message)
         this->payload[this->position++] = message->payload[i];
     }
     this->position += (aligned - message->length());
+    /*for (int i = this->position; i <= (aligned - message->length()); i++){
+        this->payload[this->position++] = 0;
+    }*/
 }
 
 

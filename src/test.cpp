@@ -4,3 +4,4 @@
 #include "serialization/MessagePaddr_test.cpp"
 #include "serialization/MessageDecoder_test.cpp"
 #include "crypto/Sha1_test.cpp"
+#include "serialization/opcodes/Acceptdata_test.cpp"

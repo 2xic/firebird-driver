@@ -2,6 +2,7 @@
 #include <openssl/crypto.h>
 #include "Srp.h"
 #include "../utils/Config.h"
+#include "../utils/Utils.h"
 #include "Sha1.h"
 #include <cstring>
 
@@ -56,6 +57,21 @@ char *Srp::HexPublicKey()
     return BN_bn2hex(this->publickey);
 }
 
+char *Srp::DecPublicKey()
+{
+    return BN_bn2dec(this->publickey);
+}
+
+char *Srp::HexPrivateKey()
+{
+    return BN_bn2hex(this->privatekey);
+}
+
+char *Srp::DecPrivateKey()
+{
+    return BN_bn2dec(this->privatekey);
+}
+
 /*
     TODO: This is messy, and does not properly free the memory 
 */
@@ -76,8 +92,8 @@ BIGNUM* Srp::ClientSession(
         password,
         salt
     );
-    printf("Hex => %s\n", BN_bn2hex(u));
-    printf("Hex => %s\n", BN_bn2hex(x));
+    log("Hex => %s\n", BN_bn2hex(u));
+    log("Hex => %s\n", BN_bn2hex(x));
 
     BIGNUM *B = fromDecimals(server_publickey);
     BIGNUM *A = fromDecimals(client_privatekey);
@@ -101,9 +117,9 @@ BIGNUM* Srp::ClientSession(
         bnctx
     );
 
-    printf("k => %s\n", BN_bn2hex(k));
-    printf("gx => %s\n", BN_bn2hex(gx));
-    printf("kgx => %s\n", BN_bn2hex(kgx));
+    log("k => %s\n", BN_bn2hex(k));
+    log("gx => %s\n", BN_bn2hex(gx));
+    log("kgx => %s\n", BN_bn2hex(kgx));
 
     BIGNUM *_diff = BN_new();
     BIGNUM *diff = BN_new();
@@ -130,7 +146,7 @@ BIGNUM* Srp::ClientSession(
 
     }
 
-    printf("diff => %s\n", BN_bn2hex(diff));
+    log("diff => %s\n", BN_bn2hex(diff));
     BIGNUM *ux = BN_new();
     BIGNUM *_ux = BN_new();
     BN_mul(
@@ -142,7 +158,7 @@ BIGNUM* Srp::ClientSession(
         n,
         bnctx
     );
-    printf("ux => %s\n", BN_bn2hex(ux));
+    log("ux => %s\n", BN_bn2hex(ux));
 
     BIGNUM *aux = BN_new();
     BIGNUM *_aux = BN_new();
@@ -154,11 +170,11 @@ BIGNUM* Srp::ClientSession(
     BN_mod(
         aux, _aux, n, bnctx
     );
-    printf("aux => %s\n", BN_bn2hex(aux));
+    log("aux => %s\n", BN_bn2hex(aux));
 
     BIGNUM *session_secret = BN_new();
     BN_mod_exp(session_secret, diff, aux, n, bnctx);
-    printf("session_secret => %s\n", BN_bn2hex(session_secret));
+    log("session_secret => %s\n", BN_bn2hex(session_secret));
 
 
     BIGNUM *K = BN_new();
@@ -172,7 +188,7 @@ BIGNUM* Srp::ClientSession(
     delete sha1;
 
     BIGNUM *value = fromHex(hash);
-    printf("value => %s\n", BN_bn2hex(value));
+    log("value => %s\n", BN_bn2hex(value));
     return value;
 }
 

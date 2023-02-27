@@ -5,6 +5,8 @@
 #include "../utils/Opcodes.h"
 #include "../utils/Utils.h"
 #include "./opcodes/Acceptdata.h"
+#include "./opcodes/Responsedata.h"
+#include "./opcodes/Response.h"
 
 #define INT_SIZE 4
 #define SHORT_SIZE 2
@@ -32,7 +34,7 @@ void MessageDecoder::decode(unsigned char *stream, int length)
     this->length = length;
 }
 
-void MessageDecoder::opcode()
+Response* MessageDecoder::opcode()
 {
     DebugBuffer(this);
     int opcode = this->readInt();
@@ -44,7 +46,11 @@ void MessageDecoder::opcode()
         printf("Opcode op_accept_data\n");
         AcceptData *ad = new AcceptData();
         ad->decode(this);
-        break;
+        return ad;
+    }
+    case op_response:{
+        ResponseData *rp = new ResponseData(this);
+        return rp;
     }
     default:
     {
@@ -66,6 +72,11 @@ int MessageDecoder::readInt()
     return value;
 }
 
+void MessageDecoder::readQuad() {
+    this->readInt();
+    this->readInt();
+}
+
 unsigned short MessageDecoder::readShortLe()
 {
     int value = 0;
@@ -79,8 +90,12 @@ unsigned short MessageDecoder::readShortLe()
 
 unsigned char *MessageDecoder::readBuffer(int length)
 {
-    this->position += length;
-    return NULL;
+    unsigned char *output = (unsigned char *)malloc(sizeof(unsigned char) * length);
+    // TODO: memcpy is faster probably
+    for(int i = 0; i < length; i++){
+        output[i] = this->payload[this->position++];
+    }
+    return output;
 }
 
 unsigned char *MessageDecoder::readArray()

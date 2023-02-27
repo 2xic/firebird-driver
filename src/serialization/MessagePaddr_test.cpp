@@ -33,6 +33,7 @@ CHEAT_TEST(
             message->dump(),
             "00000001000000130000000300000001000000047465737400000004000000060004746573740000000000000000000000000000000000000000000000000000",
             128) == 0);
+
     cheat_assert(
         message->length() == 40);
 
@@ -44,6 +45,7 @@ CHEAT_TEST(
         [PROTOCOL_VERSION13, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 4],
     ]
     */
+
     for (int i = 0; i < 4; i++) {
         message->write4Bytes(supported_protocols[i][0]);
         message->write4Bytes(supported_protocols[i][1]);
