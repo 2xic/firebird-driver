@@ -2,4 +2,6 @@ bins
 debug
 firebird_cli
 firebird_cli_test
+firebird_leaks
 afl*
+FuzzMessageDecoder

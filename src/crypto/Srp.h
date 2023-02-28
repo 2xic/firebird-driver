@@ -12,6 +12,8 @@ BIGNUM *privatekey;
 
 public:
     Srp();
+    
+    ~Srp();
 
     char *HexPublicKey();
 

@@ -25,6 +25,14 @@ BIGNUM *randomBigNum(int length);
 BIGNUM *fromHex(const char n[]);
 BIGNUM *fromDecimals(const char n[]);
 
+void log_bignum(const char *__restrict__ __format, BIGNUM *a){
+    if(DEBUG){
+        char *a_hex = BN_bn2hex(a);
+        printf(__format, a_hex);
+        free(a_hex);
+    }
+}
+
 Srp::Srp()
 {
     BN_CTX *bnctx = BN_CTX_new();
@@ -42,7 +50,7 @@ Srp::Srp()
 
     if (DEBUG)
     {
-        log("Private => %s\n", BN_bn2hex(publicFromPrivate));
+        log_bignum("Private => %s\n", publicFromPrivate);
         BN_print_fp(stdout, g);
         log("\n");
         BN_print_fp(stdout, n);
@@ -50,6 +58,10 @@ Srp::Srp()
         log("\n");
         log("Public => %s\n", this->HexPublicKey());
     }
+}
+Srp::~Srp(){
+    BN_free(this->privatekey);
+    BN_free(this->publickey);
 }
 
 char *Srp::HexPublicKey()
@@ -76,11 +88,11 @@ unsigned char *BigNum2Char(BIGNUM *a){
     int a_l = BN_num_bytes(a);
     unsigned char *a_c = (unsigned char*)malloc((sizeof(unsigned char)) * (a_l));
     BN_bn2bin(a, a_c);
+
     return a_c;
 }
 
 BIGNUM *BigNum2Hash2BigNUm(BIGNUM *a) {
-   // unsigned char*a_c = BigNum2Char(a);
     int a_l = BN_num_bytes(a);
     unsigned char *a_c = (unsigned char*)malloc((sizeof(unsigned char)) * a_l);
     BN_bn2bin(a, a_c);
@@ -90,12 +102,18 @@ BIGNUM *BigNum2Hash2BigNUm(BIGNUM *a) {
     char *hash = sha1->hash();
 
     BIGNUM *value = fromHex(hash);
-/*
-    free(hash);
+
     free(a_c);
-    delete sha1;*/
+    free(hash);
+    delete sha1;
 
     return value;
+}
+
+void RawBigNumHash(Sha1 *hasher, BIGNUM * a){
+    unsigned char *a_chars = BigNum2Char(a);
+    hasher->update(a_chars, BN_num_bytes(a));
+    free(a_chars);
 }
 
 /*
@@ -118,8 +136,8 @@ BIGNUM* Srp::ClientSession(
         password,
         salt
     );
-    log("Hex => %s\n", BN_bn2hex(u));
-    log("Hex => %s\n", BN_bn2hex(x));
+    log_bignum("Hex => %s\n", u);
+    log_bignum("Hex => %s\n", x);
 
     BIGNUM *B = fromDecimals(server_publickey);
     BIGNUM *A = fromDecimals(client_privatekey);
@@ -143,9 +161,9 @@ BIGNUM* Srp::ClientSession(
         bnctx
     );
 
-    log("k => %s\n", BN_bn2hex(k));
-    log("gx => %s\n", BN_bn2hex(gx));
-    log("kgx => %s\n", BN_bn2hex(kgx));
+    log_bignum("k => %s\n", k);
+    log_bignum("gx => %s\n", gx);
+    log_bignum("kgx => %s\n", kgx);
 
     BIGNUM *_diff = BN_new();
     BIGNUM *diff = BN_new();
@@ -169,10 +187,9 @@ BIGNUM* Srp::ClientSession(
             n
         );
         // TODO, this is dirty, and also need to copy to another diff.
-
     }
 
-    log("diff => %s\n", BN_bn2hex(diff));
+    log_bignum("diff => %s\n", diff);
     BIGNUM *ux = BN_new();
     BIGNUM *_ux = BN_new();
     BN_mul(
@@ -184,7 +201,7 @@ BIGNUM* Srp::ClientSession(
         n,
         bnctx
     );
-    log("ux => %s\n", BN_bn2hex(ux));
+    log_bignum("ux => %s\n", ux);
 
     BIGNUM *aux = BN_new();
     BIGNUM *_aux = BN_new();
@@ -196,28 +213,46 @@ BIGNUM* Srp::ClientSession(
     BN_mod(
         aux, _aux, n, bnctx
     );
-    log("aux => %s\n", BN_bn2hex(aux));
+    log_bignum("aux => %s\n", aux);
 
     BIGNUM *session_secret = BN_new();
     BN_mod_exp(session_secret, diff, aux, n, bnctx);
-    log("session_secret => %s\n", BN_bn2hex(session_secret));
-
-
-    BIGNUM *K = BN_new();
-    int session_secret_l = BN_num_bytes(session_secret);
-    unsigned char *session_secret_c = (unsigned char*)malloc((sizeof(unsigned char)) * session_secret_l);
-    BN_bn2bin(session_secret, session_secret_c);
+    log_bignum("session_secret => %s\n", session_secret);
 
     Sha1 *sha1 = new Sha1();
-    sha1->update(session_secret_c, session_secret_l);
+    RawBigNumHash(sha1, session_secret);
+    
     char *hash = sha1->hash();
-    delete sha1;
 
     BIGNUM *value = fromHex(hash);
-    log("value => %s\n", BN_bn2hex(value));
+    log_bignum("value => %s\n", value);
+
+    delete sha1;
+    free(hash);
+
+    BN_free(session_secret);
+    BN_free(aux);
+    BN_free(_aux);
+    BN_free(ux);
+    BN_free(_ux);
+    BN_free(zero);
+    BN_free(diff);
+    BN_free(_diff);
+    BN_free(_kgx);
+    BN_free(k);
+    BN_free(gx);
+
+    BN_free(B);
+    BN_free(A);
+    BN_free(g);
+    BN_free(n);
+    BN_free(u);
+    BN_free(x);
+
+    BN_CTX_free(bnctx);
+    
     return value;
 }
-
 
 BIGNUM* Srp::ClientProof(
     char *username,
@@ -242,65 +277,60 @@ BIGNUM* Srp::ClientProof(
     BIGNUM *n_hash = BigNum2Hash2BigNUm(n);
     BIGNUM *g_hash = BigNum2Hash2BigNUm(g);
 
-    log("n => %s\n", BN_bn2hex(n));
-    log("g => %s\n", BN_bn2hex(g));
+    log_bignum("n => %s\n", n);
+    log_bignum("g => %s\n", g);
 
-    log("n_hash => %s\n", BN_bn2hex(n_hash));
-    log("g_hash => %s\n", BN_bn2hex(g_hash));
-    log("n => %s\n", BN_bn2hex(n));
-    log("g => %s\n", BN_bn2hex(g));
+    log_bignum("n_hash => %s\n", n_hash);
+    log_bignum("g_hash => %s\n", g_hash);
+    log_bignum("n => %s\n", n);
+    log_bignum("g => %s\n", g);
 
     BN_CTX *bnctx = BN_CTX_new();
     BIGNUM *n1_mod = BN_new();
     BN_mod_exp(n1_mod, n_hash, g_hash, n, bnctx);
 
-    log("n1_mod => %s\n", BN_bn2hex(n1_mod));
+    log_bignum("n1_mod => %s\n", n1_mod);
 
     Sha1 *username_sha1 = new Sha1();
     username_sha1->update((unsigned char*)username, strlen(username));
     char *username_sha1_hash = username_sha1->hash();
-    delete username_sha1;
 
     BIGNUM *username_hash = fromHex(username_sha1_hash);
-    log("n2_mod => %s\n", BN_bn2hex(username_hash));
+    log_bignum("n2_mod => %s\n", username_hash);
     log("\n");
 
 
     Sha1 *salt_sha1_final = new Sha1();
-    salt_sha1_final->update(BigNum2Char(n1_mod), BN_num_bytes(n1_mod));
-    salt_sha1_final->update(BigNum2Char(username_hash), BN_num_bytes(username_hash));
+    RawBigNumHash(salt_sha1_final, n1_mod);
+    RawBigNumHash(salt_sha1_final, username_hash);
     salt_sha1_final->update((unsigned char*)salt, strlen(salt));
 
     BIGNUM *client_publickey_num = fromDecimals(client_publickey);
-    salt_sha1_final->update(BigNum2Char(client_publickey_num), BN_num_bytes(client_publickey_num));
+    RawBigNumHash(salt_sha1_final, client_publickey_num);
 
     BIGNUM *server_public_key_num = fromDecimals(server_publickey);
-    salt_sha1_final->update(BigNum2Char(server_public_key_num), BN_num_bytes(server_public_key_num));
-
-    salt_sha1_final->update(BigNum2Char(clientSession), BN_num_bytes(clientSession));
+    RawBigNumHash(salt_sha1_final, server_public_key_num);
+    RawBigNumHash(salt_sha1_final, clientSession);
 
     char *salt_sha1_hash_final = salt_sha1_final->hash();
     log("hash == %s\n", salt_sha1_hash_final);
-    /*
-    unsigned char*a_c = BigNum2Char(n1_mod);
-    log("n1_mod == %s\n", BN_bn2hex(n1_mod));
 
-    unsigned char*a_d = BigNum2Char(username_hash);
-    unsigned char*a_e = BigNum2Char(clientSession);
-    salt_sha1_final->update(a_d, strlen((char*)a_d));
-    log("salt == %s\n", salt);
-    salt_sha1_final->update((unsigned char*)salt, strlen((char*)salt));
-    salt_sha1_final->update((unsigned char*)client_publickey, strlen((char*)client_publickey));
-    salt_sha1_final->update((unsigned char*)server_publickey, strlen((char*)server_publickey));
-    salt_sha1_final->update((unsigned char*)client_privatekey, strlen((char*)client_privatekey));
-    salt_sha1_final->update((unsigned char*)a_e, strlen((char*)a_e));
-    char *salt_sha1_hash_final = salt_sha1_final->hash();
+    BIGNUM *value = fromHex(salt_sha1_hash_final);
+
     delete salt_sha1_final;
+    delete username_sha1;
 
-    BIGNUM *value = fromHex(salt_sha1_hash_final);
-    log("value => %s\n", BN_bn2hex(value));
-*/
-    BIGNUM *value = fromHex(salt_sha1_hash_final);
+    BN_free(n);
+    BN_free(g);
+    BN_free(n_hash);
+    BN_free(g_hash);
+    BN_free(username_hash);
+    BN_free(client_publickey_num);
+    BN_free(server_public_key_num);
+    BN_free(n1_mod);
+
+    BN_CTX_free(bnctx);
+    free(salt_sha1_hash_final);
 
     return value;
 }
@@ -323,16 +353,16 @@ BIGNUM *combined(
     BN_bn2bin(a_p, a_c);
     BN_bn2bin(b_p, b_c);
 
-
-    BN_free(a_p);
-    BN_free(b_p);
-
     Sha1 *sha1 = new Sha1();
     sha1->update(a_c, a_l);
     sha1->update(b_c, b_l);
     char *hash = sha1->hash();
-    delete sha1;
     BIGNUM *value = fromHex(hash);
+
+    delete sha1;
+
+    BN_free(a_p);
+    BN_free(b_p);
 
     free(hash);
     free(a_c);
@@ -353,16 +383,17 @@ BIGNUM *authHash(
     sha1->update((unsigned char*)&chars, 1);
     sha1->update((unsigned char*)password, strlen(password));
     unsigned char *hash = sha1->raw_hash();
-    delete sha1;
 
     Sha1 *salt_sha1 = new Sha1();
     salt_sha1->update((unsigned char*)salt, strlen(salt));
     salt_sha1->update((unsigned char*)hash, 20);
 
     char *salt_sha1_hash = salt_sha1->hash();
-    delete salt_sha1;
 
     BIGNUM *value = fromHex(salt_sha1_hash);
+
+    delete sha1;
+    delete salt_sha1;
 
     free(hash);
     free(salt_sha1_hash);

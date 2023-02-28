@@ -16,6 +16,24 @@ build:
 	-lcrypto \
 	-o firebird_cli
 
+leaks:
+	g++ -Wno-deprecated-declarations \
+		./src/leaks.cpp \
+		./src/serialization/Message.cpp \
+		./src/serialization/MessageDecoder.cpp \
+		./src/serialization/MessagePaddr.cpp \
+		./src/crypto/Srp.cpp \
+		./src/database/Connection.cpp \
+		./src/database/Firebird.cpp \
+		./src/crypto/Sha1.cpp \
+		./src/utils/Profile.cpp \
+		./src/serialization/opcodes/Acceptdata.cpp \
+		./src/serialization/opcodes/Responsedata.cpp \
+	-I ./src/ \
+	-lcrypto \
+	-o firebird_leaks
+	./firebird_leaks
+
 test:
 	cd src && g++ -Wno-deprecated-declarations \
 		test.cpp \
@@ -35,6 +53,24 @@ run: build
 
 fuzz:
 	echo "fuzz"
+		./afl/afl-g++ -Wno-deprecated-declarations \
+		./src/fuzzing/FuzzMessageDecoder.cpp \
+		./src/serialization/Message.cpp \
+		./src/serialization/MessageDecoder.cpp \
+		./src/serialization/MessagePaddr.cpp \
+		./src/crypto/Srp.cpp \
+		./src/database/Connection.cpp \
+		./src/database/Firebird.cpp \
+		./src/crypto/Sha1.cpp \
+		./src/utils/Profile.cpp \
+		./src/serialization/opcodes/Acceptdata.cpp \
+		./src/serialization/opcodes/Responsedata.cpp \
+	-I ./src/ \
+	-lcrypto \
+	-o FuzzMessageDecoder
+	# ./FuzzMessageDecoder
+	./afl/afl-fuzz -i ./afl/input/ -o ./afl/output/ -- ./FuzzMessageDecoder
+	 @@
 
 fuzz_build:
 	wget -c https://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
