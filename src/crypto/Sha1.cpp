@@ -4,11 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO     ~Sha1();
 Sha1::Sha1()
 {
     char output[80];
     SHA1_Init(&this->context);
+}
+
+Sha1::~Sha1(){
+    // Looks like you don' need to free the sha1 context
 }
 
 void Sha1::update(unsigned char *data, int length)

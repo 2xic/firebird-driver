@@ -3,9 +3,9 @@
 int main(int argc, char const* argv[])
 {
     Firebird *cli = new Firebird();
-    int status = cli->Connect();
-
-    printf("Did I connect ? status %i\n", status);
+    cli->Connect();
+    cli->Query();
+    cli->Disconnect();
 
     return 0;
 }

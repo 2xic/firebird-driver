@@ -31,9 +31,15 @@ leaks:
 		./src/serialization/opcodes/Responsedata.cpp \
 	-I ./src/ \
 	-lcrypto \
+	-ggdb3 \
 	-o firebird_leaks
-	./firebird_leaks
-
+	#./firebird_leaks
+	valgrind --leak-check=full \
+			--show-leak-kinds=all \
+			--track-origins=yes \
+			--verbose \
+			--log-file=valgrind-out.txt \
+			./firebird_leaks
 test:
 	cd src && g++ -Wno-deprecated-declarations \
 		test.cpp \
@@ -84,3 +90,7 @@ docker_run:
 
 docker_build:
 	sudo docker build -t firebird_db .
+
+delta: build
+	TIMEFORMAT='%3lR' /usr/bin/time -p  ./firebird_cli
+	TIMEFORMAT='%3lR' /usr/bin/time -p  node ./ref/node-firebird/example.js

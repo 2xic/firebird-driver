@@ -76,7 +76,6 @@ int Firebird::Connect()
             this->connection->messagePaddr->position
         );
         log("Sent == %i\n", bytesSent);
-        Response *decoded = this->ReadResponse();
     } else {
         delete decoded;
         printf("Wrong class, should exit");
@@ -85,11 +84,83 @@ int Firebird::Connect()
     return 0;
 }
 
+int Firebird::Query() {
+    ResponseData *rp = this->ReadResponseData();
+    this->connection->startTransaction(
+        rp->database_handle
+    );
+    int bytesSent = write(
+        this->client_fd,
+        this->connection->messagePaddr->payload,
+        this->connection->messagePaddr->position
+    );
+    log("Sent == %i\n", bytesSent);
+
+    ResponseData *response = this->ReadResponseData();
+    // Is the transaction active ?
+    // Yes it is
+    this->connection->prepareStatment(
+        rp->database_handle,
+        response->database_handle,
+        (char*)"SELECT * FROM MYDATA"
+    );
+    bytesSent = write(
+        this->client_fd,
+        this->connection->messagePaddr->payload,
+        this->connection->messagePaddr->position
+    );
+    log("Sent == %i\n", bytesSent);
+    ResponseData *response_statment = this->ReadResponseData();
+
+    // Is the transaction active ?
+    // Yes it is
+    this->connection->executeStatment(
+        rp->database_handle,
+        response->database_handle,
+        response_statment->database_handle
+    );
+    bytesSent = write(
+        this->client_fd,
+        this->connection->messagePaddr->payload,
+        this->connection->messagePaddr->position
+    );
+    log("Sent == %i\n", bytesSent);
+    response = this->ReadResponseData();
+//    printf("handle == %i\n", response->database_handle);
+
+    this->connection->fetch(
+        response_statment->database_handle
+    );
+    bytesSent = write(
+        this->client_fd,
+        this->connection->messagePaddr->payload,
+        this->connection->messagePaddr->position
+    );
+    log("Sent == %i\n", bytesSent);
+    this->ReadResponse();
+
+    return 0;
+}
+
+int Firebird::Disconnect()
+{
+    return close(this->client_fd);
+}
+
+ResponseData* Firebird::ReadResponseData() {
+    Response *response = this->ReadResponse();
+    if (!instanceof<ResponseData>(response)){
+        printf("Expected response data \n");
+        exit(0);
+    }
+    return (ResponseData*)response;
+}
+
 Response* Firebird::ReadResponse() {
     MessageDecoder *decode = new MessageDecoder();
     unsigned char buffer[1024] = { 0 };
     int length = recv(this->client_fd, buffer, 1024, 0);
-    printf("Output = %i\n", length);
+    log("Output = %i\n", length);
 
     decode->decode((unsigned char*)&buffer, length);
     Response *response = decode->opcode();

@@ -10,7 +10,6 @@ CHEAT_TEST(accept_data_should_decode,
     message->decode(test_data, 361);
     Response *ac_data = message->opcode();
     char *data = ((AcceptData*)ac_data)->data();
-    printf("%s\n", data);
     cheat_assert(
         strncmp(
             toLowerCase(data),

@@ -7,7 +7,7 @@
 #include "../../crypto/Srp.h"
 
 ResponseData::ResponseData(MessageDecoder *decoder){
-    decoder->readInt();
+    this->database_handle = decoder->readInt();
     decoder->readQuad();
     decoder->readArray();
 
@@ -26,14 +26,14 @@ ResponseData::ResponseData(MessageDecoder *decoder){
                     done = true;
                     break;
                 }
-                printf("gscode == %i == num\n", number);
+                log("gscode == %i == num\n", number);
                 log("pos == %i\n", decoder->position);
                 this->is_error = true;
                 done = true;
                 break;
             }
             default: {
-                printf("Unkown opcode == %i\n", op);
+                log("Unkown opcode == %i\n", op);
                 done = true;
                 break;
             }

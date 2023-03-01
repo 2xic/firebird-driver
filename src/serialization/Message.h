@@ -15,6 +15,9 @@ public:
     void writeInt8(int value);
 
     // TODO: This name does not make sense
+    void writeInt16(int value);
+
+    // TODO: This name does not make sense
     void writeInt32(int value);
 
     void writeString(char* value);

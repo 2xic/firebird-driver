@@ -9,6 +9,8 @@ class ResponseData: public Response
 public:
     bool is_error = false;
 
+    int database_handle = 0;
+
     ResponseData(MessageDecoder *decoder);
 
     char * data();

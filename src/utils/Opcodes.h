@@ -268,4 +268,137 @@ inline const int supported_protocols[4][5] = {
 	{PROTOCOL_VERSION13, ARCHITECTURE_GENERIC, ptype_lazy_send, ptype_lazy_send, 4}
 };
 
+/*************************************/
+/* Transaction parameter block stuff */
+/*************************************/
+inline const int
+    isc_tpb_version1                =  1,
+    isc_tpb_version3                =  3,
+    isc_tpb_consistency             =  1,
+    isc_tpb_concurrency             =  2,
+    isc_tpb_shared                  =  3, // < FB21
+    isc_tpb_protected               =  4, // < FB21
+    isc_tpb_exclusive               =  5, // < FB21
+    isc_tpb_wait                    =  6,
+    isc_tpb_nowait                  =  7,
+    isc_tpb_read                    =  8,
+    isc_tpb_write                   =  9,
+    isc_tpb_lock_read               =  10,
+    isc_tpb_lock_write              =  11,
+    isc_tpb_verb_time               =  12,
+    isc_tpb_commit_time             =  13,
+    isc_tpb_ignore_limbo            =  14,
+    isc_tpb_read_committed          =  15,
+    isc_tpb_autocommit              =  16,
+    isc_tpb_rec_version             =  17,
+    isc_tpb_no_rec_version          =  18,
+    isc_tpb_restart_requests        =  19,
+    isc_tpb_no_auto_undo            =  20,
+    isc_tpb_lock_timeout            =  21; // >= FB20
+
+inline const int 
+    ISOLATION_READ_UNCOMMITTED[5]          = {isc_tpb_version3, isc_tpb_write, isc_tpb_wait, isc_tpb_read_committed, isc_tpb_rec_version};
+inline const int 
+    ISOLATION_READ_COMMITTED[5]             = {isc_tpb_version3, isc_tpb_write, isc_tpb_wait, isc_tpb_read_committed, isc_tpb_no_rec_version};
+inline const int 
+    ISOLATION_REPEATABLE_READ[4]           = {isc_tpb_version3, isc_tpb_write, isc_tpb_wait, isc_tpb_concurrency};
+inline const int 
+    ISOLATION_SERIALIZABLE[4]              = {isc_tpb_version3, isc_tpb_write, isc_tpb_wait, isc_tpb_consistency};
+inline const int 
+    ISOLATION_READ_COMMITTED_READ_ONLY[5]   = {isc_tpb_version3, isc_tpb_read, isc_tpb_wait, isc_tpb_read_committed, isc_tpb_no_rec_version};
+
+/*******************/
+/* Blr definitions */
+/*******************/
+inline const int
+    blr_text            = 14,
+    blr_text2           = 15,
+    blr_short           = 7,
+    blr_long            = 8,
+    blr_quad            = 9,
+    blr_float           = 10,
+    blr_double          = 27,
+    blr_d_float         = 11,
+    blr_timestamp       = 35,
+    blr_varying         = 37,
+    blr_varying2        = 38,
+    blr_blob            = 261,
+    blr_cstring         = 40,
+    blr_cstring2        = 41,
+    blr_blob_id         = 45,
+    blr_sql_date        = 12,
+    blr_sql_time        = 13,
+    blr_int64           = 16,
+    blr_blob2           = 17, // >= 2.0
+    blr_domain_name     = 18, // >= 2.1
+    blr_domain_name2    = 19, // >= 2.1
+    blr_not_nullable    = 20, // >= 2.1
+    blr_column_name     = 21, // >= 2.5
+    blr_column_name2    = 22, // >= 2.5
+    blr_bool            = 23, // >= 3.0
+
+    blr_version4        = 4,
+    blr_version5        = 5, // dialect 3
+    blr_eoc             = 76,
+    blr_end             = 255,
+
+    blr_assignment      = 1,
+    blr_begin           = 2,
+    blr_dcl_variable    = 3,
+    blr_message         = 4;
+
+/*************************/
+/* SQL information items */
+/*************************/
+inline const int
+    isc_info_sql_select             = 4,
+    isc_info_sql_bind               = 5,
+    isc_info_sql_num_variables      = 6,
+    isc_info_sql_describe_vars      = 7,
+    isc_info_sql_describe_end       = 8,
+    isc_info_sql_sqlda_seq          = 9,
+    isc_info_sql_message_seq        = 10,
+    isc_info_sql_type               = 11,
+    isc_info_sql_sub_type           = 12,
+    isc_info_sql_scale              = 13,
+    isc_info_sql_length             = 14,
+    isc_info_sql_null_ind           = 15,
+    isc_info_sql_field              = 16,
+    isc_info_sql_relation           = 17,
+    isc_info_sql_owner              = 18,
+    isc_info_sql_alias              = 19,
+    isc_info_sql_sqlda_start        = 20,
+    isc_info_sql_stmt_type          = 21,
+    isc_info_sql_get_plan           = 22,
+    isc_info_sql_records            = 23,
+    isc_info_sql_batch_fetch        = 24,
+    isc_info_sql_relation_alias     = 25, // >= 2.0
+    isc_info_sql_explain_plan       = 26; // >= 3.0
+
+
+inline const int DESCRIBE[20] = {
+	isc_info_sql_stmt_type,
+	isc_info_sql_select,
+	isc_info_sql_describe_vars,
+	isc_info_sql_sqlda_seq,
+	isc_info_sql_type,
+	isc_info_sql_sub_type,
+	isc_info_sql_scale,
+	isc_info_sql_length,
+	isc_info_sql_field,
+	isc_info_sql_relation,
+	//isc_info_sql_owner,
+	isc_info_sql_alias,
+	isc_info_sql_describe_end,
+	isc_info_sql_bind,
+	isc_info_sql_describe_vars,
+	isc_info_sql_sqlda_seq,
+	isc_info_sql_type,
+	isc_info_sql_sub_type,
+	isc_info_sql_scale,
+	isc_info_sql_length,
+	isc_info_sql_describe_end
+};
 #endif
+
+

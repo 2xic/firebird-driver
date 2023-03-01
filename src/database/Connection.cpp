@@ -121,3 +121,104 @@ int DatabaseConnection::Attach(char *auth_data) {
 
     return 0;
 }
+
+void DatabaseConnection::startTransaction(int database_handle) {
+    this->messagePaddr->position = 0;
+    this->message->position = 0;
+    
+    this->message->writeByte(ISOLATION_REPEATABLE_READ[0]);
+    this->message->writeByte(ISOLATION_REPEATABLE_READ[1]);
+    this->message->writeByte(ISOLATION_REPEATABLE_READ[2]);
+    this->message->writeByte(ISOLATION_REPEATABLE_READ[3]);
+    
+    this->messagePaddr->write4Bytes(op_transaction);
+    this->messagePaddr->write4Bytes(database_handle);
+    this->messagePaddr->writeMessage(this->message);
+}
+
+
+
+void DatabaseConnection::prepareStatment(int database_handle, int transaction_handle, char* query) {
+    this->messagePaddr->position = 0;
+    this->message->position = 0;
+
+    int dialect = 3;
+    int buffer_length = 65535;
+
+    this->messagePaddr->write4Bytes(op_allocate_statement);
+    this->messagePaddr->write4Bytes(database_handle);
+
+    for(int i = 0; i < 20; i++){
+        message->writeByte(DESCRIBE[i]);
+    }
+
+    this->messagePaddr->write4Bytes(op_prepare_statement);
+    this->messagePaddr->write4Bytes(transaction_handle);
+    this->messagePaddr->write4Bytes(0xFFFF);
+    this->messagePaddr->write4Bytes(dialect);
+    this->messagePaddr->writeString(query);
+    this->messagePaddr->writeMessage(message);
+    this->messagePaddr->write4Bytes(buffer_length);
+}
+
+void DatabaseConnection::executeStatment(int database_handle, int transaction_handle, int statment_handle) {
+    this->messagePaddr->position = 0;
+    this->message->position = 0;
+
+    int dialect = 3;
+    int buffer_length = 65535;
+
+    this->messagePaddr->write4Bytes(op_execute);
+    this->messagePaddr->write4Bytes(statment_handle);
+    this->messagePaddr->write4Bytes(transaction_handle);
+
+    this->messagePaddr->writeMessage(message);
+    this->messagePaddr->write4Bytes(0);
+    this->messagePaddr->write4Bytes(0);
+}
+
+
+void DatabaseConnection::fetch(int statment_handle){
+    this->messagePaddr->position = 0;
+    this->message->position = 0;
+
+    int dialect = 3;
+    int buffer_length = 65535;
+
+    this->messagePaddr->write4Bytes(op_fetch);
+    this->messagePaddr->write4Bytes(statment_handle);
+    /*
+        TODO: This should be automated based on the statment response
+    */
+    message->writeByte(blr_version5);
+    message->writeByte(blr_begin);
+    message->writeByte(blr_message);
+    message->writeByte(0);
+
+    // WORD
+    message->writeInt16(4);
+
+    // SQLVarInt
+    message->writeByte(blr_long);
+    message->writeInt8(0);
+    message->writeByte(blr_short);
+    message->writeByte(0);
+
+    // SQLVARTEXT
+    message->writeByte(blr_text);
+    message->writeInt16(4);
+    message->writeByte(blr_short);
+    message->writeByte(0);
+
+    message->writeByte(blr_end);
+    message->writeByte(blr_eoc);
+
+    this->messagePaddr->writeMessage(message);
+
+    this->messagePaddr->write4Bytes(0);
+    this->messagePaddr->write4Bytes(200);
+}
+
+void DatabaseConnection::Query(int database_handle, char *query){
+
+}

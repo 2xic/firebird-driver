@@ -8,6 +8,7 @@ ${FBPATH}/bin/isql -user sysdba -sql_dialect 3  <<EOL
         TESTBOOLEAN CHAR(1) DEFAULT 'J'
     );
     INSERT INTO MYDATA (id, TESTBOOLEAN) values (1, 'J');
+    grant select on mydata to demo;
     commit;
     quit;
 EOL

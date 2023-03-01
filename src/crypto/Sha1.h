@@ -8,6 +8,8 @@ SHA_CTX context;
 
 public:
     Sha1();
+    
+    ~Sha1();
 
     void update(unsigned char *data, int length);
 

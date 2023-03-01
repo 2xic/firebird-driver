@@ -30,6 +30,13 @@ public:
 
     int Connect();
     int Attach(char *authdata);
+
+    void startTransaction(int database_handle);
+    void prepareStatment(int database_handle, int transaction_handle, char* query);
+    void executeStatment(int database_handle, int transaction_handle, int statment_handle);
+    void fetch(int statment_handle);
+    
+    void Query(int database_handle, char *query);
 };
 
 inline void write_opcode(Message *message, int opcode, char*string) {

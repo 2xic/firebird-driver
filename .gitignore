@@ -5,3 +5,5 @@ firebird_cli_test
 firebird_leaks
 afl*
 FuzzMessageDecoder
+valgrind*
+ref

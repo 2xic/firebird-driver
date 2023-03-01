@@ -36,28 +36,44 @@ void MessageDecoder::decode(unsigned char *stream, int length)
 
 Response* MessageDecoder::opcode()
 {
-    DebugBuffer(this);
-    int opcode = this->readInt();
+        // DebugBuffer(this);
+        int opcode = this->readInt();
 
-    switch (opcode)
-    {
-    case op_accept_data:
-    {
-        printf("Opcode op_accept_data\n");
-        AcceptData *ad = new AcceptData();
-        ad->decode(this);
-        return ad;
-    }
-    case op_response:{
-        ResponseData *rp = new ResponseData(this);
-        return rp;
-    }
-    default:
-    {
-        printf("Unknown opcode %i, %x \n", opcode, opcode);
-        printf("Exiting .... \n");
-        exit(0);
-    }
+        switch (opcode)
+        {
+        case op_accept_data:
+        {
+            AcceptData *ad = new AcceptData();
+            ad->decode(this);
+            return ad;
+        }
+        case op_response:{
+            ResponseData *rp = new ResponseData(this);
+            return rp;
+        }
+        case op_fetch_response: {
+            printf("status == %i \n", this->readInt());
+            printf("fcount == %i \n", this->readInt());
+            this->position = 16;
+
+            printf("id == %i \n", this->readInt());
+
+            int length = 4;
+            char *test_boolean = (char *)malloc(sizeof(char) * length);
+            memcpy(test_boolean, (this->payload + this->position), length);
+            test_boolean[length] = '\0';
+
+            printf("test_boolean == %s \n", test_boolean);
+
+            free(test_boolean);
+            return NULL;
+        }
+        default:
+        {
+            printf("Unknown opcode %i, %x \n", opcode, opcode);
+            printf("Exiting .... \n");
+            exit(0);
+        }
     }
 }
 

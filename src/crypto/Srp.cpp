@@ -35,18 +35,21 @@ void log_bignum(const char *__restrict__ __format, BIGNUM *a){
 
 Srp::Srp()
 {
-    BN_CTX *bnctx = BN_CTX_new();
+    this->bnctx = BN_CTX_new();
+    BN_CTX_start(this->bnctx);
+
     this->privatekey = randomBigNum(PRIVATE_KEY_SIZE);
     BIGNUM *g = fromHex(G);
     BIGNUM *n = fromHex(N);
     BIGNUM *publicFromPrivate = BN_new();
 
-    BN_mod_exp(publicFromPrivate, g, this->privatekey, n, bnctx);
+    BN_mod_exp(publicFromPrivate, g, this->privatekey, n, this->bnctx);
     this->publickey = publicFromPrivate;
 
     BN_free(g);
     BN_free(n);
-    BN_CTX_free(bnctx);
+
+    //BN_CTX_free(bnctx);
 
     if (DEBUG)
     {
@@ -59,7 +62,8 @@ Srp::Srp()
         log("Public => %s\n", this->HexPublicKey());
     }
 }
-Srp::~Srp(){
+Srp::~Srp() {
+    BN_CTX_end(this->bnctx);
     BN_free(this->privatekey);
     BN_free(this->publickey);
 }
@@ -148,7 +152,7 @@ BIGNUM* Srp::ClientSession(
     BIGNUM *_kgx = BN_new();
     BIGNUM *kgx = BN_new();
 
-    BN_CTX *bnctx = BN_CTX_new();
+    BN_CTX *bnctx = this->bnctx;
     BN_mod_exp(gx, g, x, n, bnctx);
 
     BN_mul(
@@ -239,6 +243,7 @@ BIGNUM* Srp::ClientSession(
     BN_free(diff);
     BN_free(_diff);
     BN_free(_kgx);
+    BN_free(kgx);
     BN_free(k);
     BN_free(gx);
 
@@ -249,7 +254,7 @@ BIGNUM* Srp::ClientSession(
     BN_free(u);
     BN_free(x);
 
-    BN_CTX_free(bnctx);
+   // BN_CTX_free(bnctx);
     
     return value;
 }
@@ -285,7 +290,7 @@ BIGNUM* Srp::ClientProof(
     log_bignum("n => %s\n", n);
     log_bignum("g => %s\n", g);
 
-    BN_CTX *bnctx = BN_CTX_new();
+    BN_CTX *bnctx = this->bnctx;// BN_CTX_new();
     BIGNUM *n1_mod = BN_new();
     BN_mod_exp(n1_mod, n_hash, g_hash, n, bnctx);
 
@@ -328,9 +333,13 @@ BIGNUM* Srp::ClientProof(
     BN_free(client_publickey_num);
     BN_free(server_public_key_num);
     BN_free(n1_mod);
+    BN_free(clientSession);
 
-    BN_CTX_free(bnctx);
     free(salt_sha1_hash_final);
+    free(username_sha1_hash);
+
+//    BN_CTX_end(bnctx);
+ //   BN_CTX_free(bnctx);
 
     return value;
 }
@@ -403,21 +412,17 @@ BIGNUM *authHash(
 
 BIGNUM *randomBigNum(int length)
 {
-    int hex_length = (2 * length);
+    int hex_length = (2 * length) ;
     char bytes[hex_length + 1];
-    BIGNUM *bn1 = BN_new();
     for (int i = 0; i < hex_length; i += 2)
     {
-        // Static for now while debugging
-
-        bytes[i] = '1'; // rand() & 0xFF;
+        bytes[i] = '1';
         if ((i + 1) < (hex_length - 1))
         {
             bytes[i + 1] = '0';
         }
     }
-    BN_hex2bn(&bn1, bytes);
-    return bn1;
+    return fromHex(bytes);
 }
 
 BIGNUM *fromHex(const char n[])

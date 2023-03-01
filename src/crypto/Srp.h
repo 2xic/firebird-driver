@@ -9,7 +9,7 @@ class Srp
 {
 BIGNUM *publickey;
 BIGNUM *privatekey;
-
+BN_CTX *bnctx;
 public:
     Srp();
     

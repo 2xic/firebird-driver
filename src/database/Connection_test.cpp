@@ -52,3 +52,86 @@ CHEAT_TEST(connection_attach,
         ) == 0
     );
 )
+
+
+CHEAT_TEST(connection_start_transaction,
+    const char username[] = "demo";
+    const char password[] = "demo";
+    const char database[] = "/test";
+    DatabaseConnection *connection = new DatabaseConnection(
+        (char*)username,
+        (char*)password,
+        (char*)database
+    );
+    connection->startTransaction(0);
+    cheat_assert(
+        strncmp(
+            connection->messagePaddr->dumpToPosition(),
+            "0000001d000000000000000403090602",
+            32
+        ) == 0
+    );
+)
+
+
+CHEAT_TEST(connection_prepare_statment,
+    const char username[] = "demo";
+    const char password[] = "demo";
+    const char database[] = "/test";
+    const char query[] = "SELECT * FROM MYDATA";
+    DatabaseConnection *connection = new DatabaseConnection(
+        (char*)username,
+        (char*)password,
+        (char*)database
+    );
+    connection->prepareStatment(0, 1, (char*)query);
+    cheat_assert(
+        strncmp(
+            connection->messagePaddr->dumpToPosition(),
+            "0000003e0000000000000044000000010000ffff000000030000001453454c454354202a2046524f4d204d594441544100000014150407090b0c0d0e101113080507090b0c0d0e080000ffff",
+            152
+        ) == 0
+    );
+)
+
+
+CHEAT_TEST(connection_execute_statment,
+    const char username[] = "demo";
+    const char password[] = "demo";
+    const char database[] = "/test";
+    const char query[] = "SELECT * FROM MYDATA";
+    DatabaseConnection *connection = new DatabaseConnection(
+        (char*)username,
+        (char*)password,
+        (char*)database
+    );
+    connection->executeStatment(0, 1, 2);
+    cheat_assert(
+        strncmp(
+            connection->messagePaddr->dumpToPosition(),
+            "0000003f0000000200000001000000000000000000000000",
+            48
+        ) == 0
+    );
+)
+
+
+CHEAT_TEST(connection_execute_fetch,
+    const char username[] = "demo";
+    const char password[] = "demo";
+    const char database[] = "/test";
+    const char query[] = "SELECT * FROM MYDATA";
+    DatabaseConnection *connection = new DatabaseConnection(
+        (char*)username,
+        (char*)password,
+        (char*)database
+    );
+    connection->fetch(2);
+    cheat_assert(
+        strncmp(
+            connection->messagePaddr->dumpToPosition(),
+            "000000410000000200000011050204000400080007000e04000700ff4c00000000000000000000c8",
+            80
+        ) == 0
+    );
+)

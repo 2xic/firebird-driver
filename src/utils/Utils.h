@@ -39,27 +39,4 @@ inline char* getAsHex(unsigned char *data, int length) {
     return results;
 }
 
-// TODO: Replace this 
-inline unsigned char ByteToAscii(const char *input) {
-  char singleChar;
-  unsigned char out;
-  memcpy(&singleChar, input, 2);
-  out = (int)strtol(&singleChar, NULL, 16);
-  return out;
-}
-
-inline int HexStringToAscii(const char *input, unsigned int length) {
-  int mIndex, sIndex = 0;
-  unsigned char buffer[length];
-  for (mIndex = 0; mIndex < length; mIndex++) {
-    sIndex = mIndex * 2;
-    unsigned char b = ByteToAscii(&input[sIndex]);
-    memcpy(&buffer[mIndex], &b, 1);
-    printf("%i\n", b);
-  }
-  printf("xx %s == ", buffer);
-//  *output = strdup(buffer);
-  return 0;
-}
-
 #endif

@@ -29,6 +29,23 @@ void Message::writeByte(unsigned char value)
     this->payload[this->position++] = value;
 }
 
+void Message::writeInt16(int value)
+{
+    this->expand(2);
+
+    int index = 0;
+    while(value > 0 && index < 2) {
+        this->payload[this->position + index] = (int)(value & 0xFF);
+        value = (int)(value >> 8);
+        index++;
+    }
+    while(index < 2) {
+        this->payload[this->position + index] = 0;
+        index++;        
+    }
+    this->position+=2;
+}
+
 void Message::writeInt32(int value)
 {
     this->expand(4);
@@ -45,12 +62,7 @@ void Message::writeInt32(int value)
     }
     this->position+=4;
 }
-/*
-013004555446381c0464656d6f4704d2 4a0474657374
 
-013004555446381c0464656d6f4704d2      4a0474657374
-013004555446381c0464656d6f4704d20400004a0474657374542834643330623836643065336364613430313964396136336664303938373839653537313338316433
-*/
 void Message::writeString(char *value)
 {
     this->expand(strlen(value) + 1);
