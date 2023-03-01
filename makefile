@@ -91,6 +91,11 @@ docker_run:
 docker_build:
 	sudo docker build -t firebird_db .
 
-delta: build
+node_addon:
+	#node-gyp configure 
+	node-gyp build
+
+delta: build node_addon
 	TIMEFORMAT='%3lR' /usr/bin/time -p  ./firebird_cli
 	TIMEFORMAT='%3lR' /usr/bin/time -p  node ./ref/node-firebird/example.js
+	TIMEFORMAT='%3lR' /usr/bin/time -p  node test.js

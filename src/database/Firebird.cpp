@@ -12,10 +12,13 @@
 #include "../serialization/opcodes/Responsedata.h"
 #include "../serialization/opcodes/Acceptdata.h"
 
+// TODO: Fix isInstanceOf does not work with node addon
+/*
 template<typename Base, typename T>
-inline bool instanceof(const T *ptr) {
+inline bool isInstanceOf(const T *ptr) {
    return dynamic_cast<const Base*>(ptr) != nullptr;
 }
+*/
 
 Firebird::Firebird()
 {
@@ -65,21 +68,21 @@ int Firebird::Connect()
 
     log("Sending attach opcode\n");
 
-    if (instanceof<AcceptData>(decoded)) {
+    //if (isInstanceOf<AcceptData>(decoded)) {
         AcceptData *data = (AcceptData*)decoded;
         this->connection->Attach(
             data->data()
         );
-        int bytesSent = write(
+        bytesSent = write(
             this->client_fd,
             this->connection->messagePaddr->payload,
             this->connection->messagePaddr->position
         );
         log("Sent == %i\n", bytesSent);
-    } else {
-        delete decoded;
-        printf("Wrong class, should exit");
-    }
+   // } else {
+     //   delete decoded;
+   //     printf("Wrong class, should exit");
+   // }
 
     return 0;
 }
@@ -149,10 +152,10 @@ int Firebird::Disconnect()
 
 ResponseData* Firebird::ReadResponseData() {
     Response *response = this->ReadResponse();
-    if (!instanceof<ResponseData>(response)){
+   /* if (!isInstanceOf<ResponseData>(response)){
         printf("Expected response data \n");
         exit(0);
-    }
+    }*/
     return (ResponseData*)response;
 }
 
@@ -165,12 +168,12 @@ Response* Firebird::ReadResponse() {
     decode->decode((unsigned char*)&buffer, length);
     Response *response = decode->opcode();
 
-    if (instanceof<ResponseData>(response)){
+  /*  if (isInstanceOf<ResponseData>(response)){
         if (((ResponseData*)response)->is_error){
             printf("Received error, should exiting\n");
             exit(0);
         }
-    }
+    }*/
 
     delete decode;
     return response;

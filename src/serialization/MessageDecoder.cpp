@@ -70,7 +70,7 @@ Response* MessageDecoder::opcode()
         }
         default:
         {
-            printf("Unknown opcode %i, %x \n", opcode, opcode);
+            printf("Decoder, unknown opcode %i, %x \n", opcode, opcode);
             printf("Exiting .... \n");
             exit(0);
         }

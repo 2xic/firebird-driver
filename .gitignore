@@ -7,3 +7,4 @@ afl*
 FuzzMessageDecoder
 valgrind*
 ref
+build
