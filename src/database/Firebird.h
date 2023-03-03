@@ -16,6 +16,7 @@ class Firebird
 
 public:
     Firebird();
+    ~Firebird();
     
     int Connect();
     int Disconnect();

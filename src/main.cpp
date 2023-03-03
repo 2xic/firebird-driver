@@ -7,5 +7,7 @@ int main(int argc, char const* argv[])
     cli->Query();
     cli->Disconnect();
 
+    delete cli;
+
     return 0;
 }

@@ -24,4 +24,5 @@ CHEAT_TEST(sha1_double_encoding,
         40
     ) == 0);
     free(double_message_hash);
+    delete double_message;
 )

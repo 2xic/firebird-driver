@@ -27,6 +27,7 @@ public:
         char* password,
         char* database
     );
+    ~DatabaseConnection();
 
     int Connect();
     int Attach(char *authdata);

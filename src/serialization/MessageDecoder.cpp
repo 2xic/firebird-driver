@@ -26,6 +26,12 @@ MessageDecoder::MessageDecoder()
     this->position = 0;
 }
 
+MessageDecoder::~MessageDecoder() {
+    // Stream is a reference, so we should not have it as class variable
+    // Since it's free outside the class.
+    this->payload = NULL;
+}
+
 void MessageDecoder::decode(unsigned char *stream, int length)
 {
     // TODO: Better if this is set in the constructor
@@ -59,13 +65,14 @@ Response* MessageDecoder::opcode()
             printf("id == %i \n", this->readInt());
 
             int length = 4;
-            char *test_boolean = (char *)malloc(sizeof(char) * length);
+            char *test_boolean = (char *)malloc(sizeof(char) * (length + 1));
             memcpy(test_boolean, (this->payload + this->position), length);
             test_boolean[length] = '\0';
 
             printf("test_boolean == %s \n", test_boolean);
 
             free(test_boolean);
+            
             return NULL;
         }
         default:
@@ -106,11 +113,12 @@ unsigned short MessageDecoder::readShortLe()
 
 unsigned char *MessageDecoder::readBuffer(int length)
 {
-    unsigned char *output = (unsigned char *)malloc(sizeof(unsigned char) * length);
+    unsigned char *output = (unsigned char *)malloc(sizeof(unsigned char) * (length + 1));
     // TODO: memcpy is faster probably
     for(int i = 0; i < length; i++){
         output[i] = this->payload[this->position++];
     }
+    output[length] = '\0';
     return output;
 }
 
@@ -133,7 +141,7 @@ char *MessageDecoder::readString()
     int length = this->readInt();
     if (length)
     {
-        char *size = (char *)malloc(sizeof(char) * length);
+        char *size = (char *)malloc(sizeof(char) * (length + 1));
         memcpy(size, (this->payload + this->position), length);
         size[length] = '\0';
 

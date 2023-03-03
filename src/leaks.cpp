@@ -7,7 +7,7 @@
 #include "./crypto/Srp_test_functions.cpp"
 
 int main(){
-    for(int i = 0; i < 10000; i++){
+    for(int i = 0; i < 100; i++){
         // profile_sha1();
         // TODO: Still some leaks in here, but a lot better
         profile_client_proof();

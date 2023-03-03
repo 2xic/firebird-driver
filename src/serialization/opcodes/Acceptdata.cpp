@@ -9,6 +9,10 @@
 
 AcceptData::AcceptData(){}
 
+AcceptData::~AcceptData(){
+    BN_free(this->client_session);
+}
+
 void AcceptData::decode(MessageDecoder *decoder)
 {
     int protocol_version = decoder->readInt();
@@ -42,27 +46,38 @@ void AcceptData::decode(MessageDecoder *decoder)
         /*
             Need to use the keys.
         */
-        MessageDecoder *keys = new MessageDecoder();
-        // TODO: Should be output from the array on top
-        keys->decode(array, array_size);
+        MessageDecoder *message_keys = new MessageDecoder();
+        message_keys->decode(array, array_size);
 
-        short saltLength = keys->readShortLe();
-        unsigned char *salt = keys->readBuffer(saltLength);
-        short keyLength = keys->readShortLe();
-        unsigned char* keys_data = keys->readBuffer(keyLength);
+        short saltLength = message_keys->readShortLe();
+        unsigned char *salt = message_keys->readBuffer(saltLength);
+        short keyLength = message_keys->readShortLe();
+        unsigned char* keys_data = message_keys->readBuffer(keyLength);
 
         BIGNUM *bn1 = BN_new();
         BN_hex2bn(&bn1, (char*)keys_data);
+
+        char *public_key = srp->DecPublicKey();
+        char *private_key = srp->DecPrivateKey();
+        char *server_key = BN_bn2dec(bn1);
 
         this->client_session = srp->ClientProof(
             (char*)FIREBIRD_USER,
             (char*)FIREBIRD_PASSWORD,
             (char*)salt, 
-            srp->DecPublicKey(),
-            BN_bn2dec(bn1),
-            srp->DecPrivateKey()
+            public_key,
+            server_key,
+            private_key
         );
         BN_free(bn1);
+
+        free(server_key);
+        free(public_key);
+        free(private_key);
+
+        free(salt);
+        free(keys_data);
+        delete message_keys;
     }
     else
     {
@@ -71,8 +86,9 @@ void AcceptData::decode(MessageDecoder *decoder)
 
     free(array);
     free(pluginName);
+    free(keys);
 
-    log("Hello!\n");
+    delete srp;
 }
 
 char* AcceptData::data(){

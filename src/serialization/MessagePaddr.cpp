@@ -13,6 +13,13 @@ MessagePaddr::MessagePaddr()
     this->payload = (unsigned char *)malloc(sizeof(unsigned char) * this->size);
 }
 
+MessagePaddr::~MessagePaddr(){
+    this->size = 0;
+    this->position = 0;
+    free(this->payload);
+    this->payload = NULL;
+}
+
 void MessagePaddr::write4Bytes(int value) {
     this->expand(4);
 

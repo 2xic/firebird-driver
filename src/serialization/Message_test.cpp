@@ -5,8 +5,8 @@ CHEAT_TEST(uint_message_encoding,
     Message *message = new Message();
     message->writeInt8(1);
     cheat_assert(message->read(0) == 1);
+    delete message;
 )
-
 
 CHEAT_TEST(string_message_encoding,
     const char *string = "test\0";
@@ -19,6 +19,7 @@ CHEAT_TEST(string_message_encoding,
     cheat_assert(message->read(3) == 115);
     cheat_assert(message->read(4) == 116);
     cheat_assert(message->length() == 5);
+    delete message;
 )
 
 CHEAT_TEST(should_be_writeable_ff,
@@ -26,4 +27,5 @@ CHEAT_TEST(should_be_writeable_ff,
     message->writeInt8(0xff);
 
     cheat_assert(message->read(0) == 0xff);
+    delete message;
 )

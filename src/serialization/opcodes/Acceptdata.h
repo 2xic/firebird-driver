@@ -11,6 +11,8 @@ class AcceptData: public Response
 public:
     AcceptData();
 
+    ~AcceptData();
+
     void decode(MessageDecoder *decoder);
 
     char * data();

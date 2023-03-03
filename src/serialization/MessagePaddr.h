@@ -12,6 +12,7 @@ public:
     unsigned char *payload;
 
     MessagePaddr();
+    ~MessagePaddr();
 
     void write4Bytes(int value);
 

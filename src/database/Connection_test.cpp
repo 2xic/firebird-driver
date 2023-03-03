@@ -30,6 +30,8 @@ CHEAT_TEST(connection,
             848
         ) == 0
     );
+
+    delete connection;
 )
 
 
@@ -51,6 +53,8 @@ CHEAT_TEST(connection_attach,
             184
         ) == 0
     );
+
+    delete connection;
 )
 
 
@@ -71,6 +75,8 @@ CHEAT_TEST(connection_start_transaction,
             32
         ) == 0
     );
+
+    delete connection;
 )
 
 
@@ -92,8 +98,9 @@ CHEAT_TEST(connection_prepare_statment,
             152
         ) == 0
     );
-)
 
+    delete connection;
+)
 
 CHEAT_TEST(connection_execute_statment,
     const char username[] = "demo";
@@ -113,6 +120,7 @@ CHEAT_TEST(connection_execute_statment,
             48
         ) == 0
     );
+    delete connection;
 )
 
 
@@ -134,4 +142,5 @@ CHEAT_TEST(connection_execute_fetch,
             80
         ) == 0
     );
+    delete connection;
 )

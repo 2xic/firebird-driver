@@ -17,4 +17,7 @@ CHEAT_TEST(accept_data_should_decode,
             40
         ) == 0
     );
+
+    delete message;
+    delete ac_data;
 )

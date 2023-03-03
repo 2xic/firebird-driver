@@ -13,6 +13,12 @@ Message::Message()
     this->payload = (unsigned char *)malloc(sizeof(unsigned char) * this->size);
 }
 
+Message::~Message() {
+    this->size = 0;
+    this->position = 0;
+    free(this->payload);
+}
+
 void Message::writeInt8(int value)
 {
     this->expand(4);

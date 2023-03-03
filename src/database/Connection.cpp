@@ -20,6 +20,12 @@ DatabaseConnection::DatabaseConnection(
     this->srp = new Srp();
 }
 
+DatabaseConnection::~DatabaseConnection(){
+    delete this->messagePaddr;
+    delete this->message;
+    delete this->srp;
+}
+
 int DatabaseConnection::Connect() {
     std::string plugin = "Srp";
     const char *plugin_c = plugin.c_str();
@@ -47,20 +53,15 @@ int DatabaseConnection::Connect() {
     std::string host = "local";
     const char *host_c = host.c_str();
     
-    //
     write_opcode(this->message, CNCT_user, (char *)user_c);
     write_opcode(this->message, CNCT_host, (char *)host_c);
-
-    //
     write_int_opcode(this->message, CNCT_user_verification, 0);
 
-    // Message paddr
     this->messagePaddr->write4Bytes(op_connect);
     this->messagePaddr->write4Bytes(op_attach);
     this->messagePaddr->write4Bytes(CONNECT_VERSION3);
     this->messagePaddr->write4Bytes(ARCHITECTURE_GENERIC);
 
-//    const char *database = FIREBIRD_DATABASE;
     this->messagePaddr->writeString((char*)this->database);
     this->messagePaddr->write4Bytes(4);
     this->messagePaddr->writeMessage(message);
@@ -72,6 +73,9 @@ int DatabaseConnection::Connect() {
         this->messagePaddr->write4Bytes(supported_protocols[i][3]);
         this->messagePaddr->write4Bytes(supported_protocols[i][4]);
     }
+
+    free(publickey);
+
     return 0;
 }
 
@@ -113,9 +117,10 @@ int DatabaseConnection::Attach(char *auth_data) {
     log("pos == %i\n", this->messagePaddr->position);
 
     this->messagePaddr->writeMessage(message);
+
     /*
-    // Then send this message to the server and see what it has to say
-*/
+        Then send this message to the server and see what it has to say
+    */
     log("full = %s\n", this->messagePaddr->dumpToPosition());
     log("blr = %s\n", this->message->dumpToPosition());
 

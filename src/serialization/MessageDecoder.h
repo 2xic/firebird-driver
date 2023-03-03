@@ -10,6 +10,7 @@ public:
     int length;
 
     MessageDecoder();
+    ~MessageDecoder();
 
     void decode(unsigned char *stream, int length);
 

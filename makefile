@@ -40,6 +40,32 @@ leaks:
 			--verbose \
 			--log-file=valgrind-out.txt \
 			./firebird_leaks
+
+cli_leaks:
+	g++ -Wno-deprecated-declarations \
+		./src/main.cpp \
+		./src/serialization/Message.cpp \
+		./src/serialization/MessageDecoder.cpp \
+		./src/serialization/MessagePaddr.cpp \
+		./src/crypto/Srp.cpp \
+		./src/database/Connection.cpp \
+		./src/database/Firebird.cpp \
+		./src/crypto/Sha1.cpp \
+		./src/utils/Profile.cpp \
+		./src/serialization/opcodes/Acceptdata.cpp \
+		./src/serialization/opcodes/Responsedata.cpp \
+	-I ./src/ \
+	-lcrypto \
+	-ggdb3 \
+	-o firebird_leaks
+	#./firebird_leaks
+	valgrind --leak-check=full \
+			--show-leak-kinds=all \
+			--track-origins=yes \
+			--verbose \
+			--log-file=valgrind-out.txt \
+	./firebird_leaks
+
 test:
 	cd src && g++ -Wno-deprecated-declarations \
 		test.cpp \

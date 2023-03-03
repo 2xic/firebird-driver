@@ -10,6 +10,7 @@ public:
     int position;
 
     Message();
+    ~Message();
 
     // TODO: This name does not make sense
     void writeInt8(int value);
