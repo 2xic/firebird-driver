@@ -1,13 +1,13 @@
-Goal was to create a poc driver than can be compiled ~~wasm~~ native node addon (for speed).
+Goal was to create a poc driver than can be compiled ~~wasm~~ native node addon (to be faster than the other node firebird implementations).
 
-Wasm was dropped because building openssl was tedious, also looks like it might be [slower](https://nickb.dev/blog/wasm-and-native-node-module-performance-comparison/)
+Wasm was dropped because building openssl was tedious, but it also looks like it's slower than native node addon ([ref. 1](https://nickb.dev/blog/wasm-and-native-node-module-performance-comparison/) [ref. 2](https://00f.net/2021/02/22/webassembly-runtimes-benchmarks/#verdict)).
 
 *Might* revisit this project later to complete the driver.
 
 ## TODO
 - ~~Make it possible to run a mvp select query, and read the response~~
 - ~~Run valgrind to fix potentional memory leaks~~
-- ~~Add AFL to fuzz the project, especially the message decoding logic has to be fuzzed. ~~
+- ~~Add AFL to fuzz the project, especially the message decoding logic has to be fuzzed.~~
 - Complete the implementation ?  
 
 ## Dependencies
@@ -39,5 +39,5 @@ sys 0.01
 ```
 
 ## References used
-- [node-firebird driver](https://github.com/hgourvest/node-firebird)
+- [node-firebird driver](https://github.com/hgourvest/node-firebird) was used as reference since it was important that this driver had the same behavior.
 
